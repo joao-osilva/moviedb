@@ -47,6 +47,10 @@ public class WriterService {
 
 	@Transactional(readOnly = true)
 	public boolean exists(Long id) {
-		return writerRepository.exists(id);
+		if (id != null) {
+			return writerRepository.exists(id);
+		}
+		
+		return false;
 	}
 }

@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -43,7 +44,9 @@ public class Movie implements Serializable {
 	@JoinColumn(name = "DIRECTOR_ID", referencedColumnName = "DIRECTOR_ID")
 	private Director director;
 
-	@ManyToMany(mappedBy = "movies")
+	//@ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
+	@ManyToMany
+	@JoinTable(joinColumns = @JoinColumn(name = "MOVIE_ID") , inverseJoinColumns = @JoinColumn(name = "WRITER_ID") )
 	private Set<Writer> writers;
 
 	@ManyToMany(mappedBy = "movies")
@@ -161,6 +164,7 @@ public class Movie implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((movieId == null) ? 0 : movieId.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		return result;
 	}
 
@@ -172,12 +176,17 @@ public class Movie implements Serializable {
 			return false;
 		if (!(obj instanceof Movie))
 			return false;
-		
+
 		final Movie other = (Movie) obj;
 		if (movieId == null) {
 			if (other.movieId != null)
 				return false;
 		} else if (!movieId.equals(other.movieId))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
 			return false;
 		return true;
 	}

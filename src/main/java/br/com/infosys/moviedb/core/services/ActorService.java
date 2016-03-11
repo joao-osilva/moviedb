@@ -50,6 +50,7 @@ public class ActorService {
 		if (id != null) {
 			return actorRepository.exists(id);
 		}
+		
 		return false;
 	}
 }

@@ -37,8 +37,8 @@ public class Writer implements Serializable {
 	@Column(name = "COUNTRY", nullable = false, length = 50)
 	private String country;
 
-	@ManyToMany
-	@JoinTable(joinColumns = @JoinColumn(name = "WRITER_ID") , inverseJoinColumns = @JoinColumn(name = "MOVIE_ID") )
+	@ManyToMany(mappedBy = "writers")
+	//@JoinTable(joinColumns = @JoinColumn(name = "WRITER_ID") , inverseJoinColumns = @JoinColumn(name = "MOVIE_ID") )
 	private Set<Movie> movies;
 
 	@Version
@@ -95,6 +95,7 @@ public class Writer implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((writerId == null) ? 0 : writerId.hashCode());
 		return result;
 	}
@@ -107,8 +108,13 @@ public class Writer implements Serializable {
 			return false;
 		if (!(obj instanceof Writer))
 			return false;
-
+		
 		final Writer other = (Writer) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
 		if (writerId == null) {
 			if (other.writerId != null)
 				return false;

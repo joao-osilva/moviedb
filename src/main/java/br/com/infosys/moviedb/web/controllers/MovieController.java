@@ -15,7 +15,7 @@ import br.com.infosys.moviedb.core.services.MovieService;
 import br.com.infosys.moviedb.domain.entities.Movie;
 
 @RestController
-@RequestMapping("/v1/movie")
+@RequestMapping("${api.url.movie}")
 public class MovieController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
@@ -27,19 +27,17 @@ public class MovieController {
 		this.movieService = movieService;
 	}
 
-	@RequestMapping(path = "/",
-				    method = RequestMethod.POST,
-				    consumes=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
 		logger.info("Creating a new Movie: " + movie.getTitle());
-		
+
 		if (movieService.exists(movie.getIdMovie())) {
 			logger.info("A Movie with id: " + movie.getIdMovie() + " already exist!");
 			return new ResponseEntity<Movie>(HttpStatus.CONFLICT);
 		}
-		
+
 		Movie persistedMovie = movieService.save(movie);
-		
+
 		return new ResponseEntity<Movie>(persistedMovie, HttpStatus.CREATED);
 	}
 

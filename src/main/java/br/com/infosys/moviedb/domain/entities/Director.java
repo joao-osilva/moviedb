@@ -93,6 +93,7 @@ public class Director implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((directorId == null) ? 0 : directorId.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -104,12 +105,17 @@ public class Director implements Serializable {
 			return false;
 		if (!(obj instanceof Director))
 			return false;
-
+		
 		final Director other = (Director) obj;
 		if (directorId == null) {
 			if (other.directorId != null)
 				return false;
 		} else if (!directorId.equals(other.directorId))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}

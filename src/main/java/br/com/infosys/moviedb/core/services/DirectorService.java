@@ -22,7 +22,7 @@ public class DirectorService {
 	public DirectorService(DirectorRepository directorRepository) {
 		this.directorRepository = directorRepository;
 	}
-	
+
 	@Transactional
 	public Director save(Director entity) {
 		return directorRepository.saveAndFlush(entity);
@@ -47,7 +47,10 @@ public class DirectorService {
 
 	@Transactional(readOnly = true)
 	public boolean exists(Long id) {
-		return directorRepository.exists(id);
-	}
+		if (id != null) {
+			return directorRepository.exists(id);
+		}
 
+		return false;
+	}
 }

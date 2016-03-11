@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,36 +15,35 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.infosys.moviedb.MovieDbApplication;
-import br.com.infosys.moviedb.core.services.ActorService;
-import br.com.infosys.moviedb.domain.entities.Actor;
+import br.com.infosys.moviedb.core.services.WriterService;
+import br.com.infosys.moviedb.domain.entities.Writer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
-public class ActorControllerTest {
+public class WriterControllerTest {
 
-	private static final String URL_ACTOR = "http://localhost:8080/v1/actor/";
+	private static final String URL_WRITER = "http://localhost:8080/v1/writer";
 
 	@Autowired
-	private ActorService actorService;
+	private WriterService writerService;
 
 	private RestTemplate restTemplate = new TestRestTemplate();
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Test
-	public void createActor() throws JsonProcessingException {
+	public void createWriter() throws JsonProcessingException {
 		// build request data
 		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("name", "João");
+		requestBody.put("name", "Marco");
 		requestBody.put("biography", "This is a brief test biography.");
-		requestBody.put("country", "Brazil");
+		requestBody.put("country", "Spain");
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -53,23 +51,23 @@ public class ActorControllerTest {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
 
-		Map<String, Object> response = restTemplate.postForObject(URL_ACTOR, httpEntity, Map.class,
+		Map<String, Object> response = restTemplate.postForObject(URL_WRITER, httpEntity, Map.class,
 				Collections.EMPTY_MAP);
 
 		// assert the response
 		Assert.assertNotNull(response);
 
 		// assert that the object is valid
-		Long actorId = Long.valueOf(response.get("idActor").toString());
+		Long writerId = Long.valueOf(response.get("idWriter").toString());
 
-		Assert.assertNotNull(actorId);
+		Assert.assertNotNull(writerId);
 
-		Actor actorFromDb = actorService.findById(actorId);
-		Assert.assertEquals("João", actorFromDb.getName());
-		Assert.assertEquals("This is a brief test biography.", actorFromDb.getBiography());
-		Assert.assertEquals("Brazil", actorFromDb.getCountry());
+		Writer writerFromDb = writerService.findById(writerId);
+		Assert.assertEquals("Marco", writerFromDb.getName());
+		Assert.assertEquals("This is a brief test biography.", writerFromDb.getBiography());
+		Assert.assertEquals("Spain", writerFromDb.getCountry());
 
 		// remove object from DB.
-		actorService.delete(actorFromDb);
+		writerService.delete(writerFromDb);
 	}
 }

@@ -96,6 +96,7 @@ public class Actor implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((actorId == null) ? 0 : actorId.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -107,12 +108,17 @@ public class Actor implements Serializable {
 			return false;
 		if (!(obj instanceof Actor))
 			return false;
-		
+
 		final Actor other = (Actor) obj;
 		if (actorId == null) {
 			if (other.actorId != null)
 				return false;
 		} else if (!actorId.equals(other.actorId))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}

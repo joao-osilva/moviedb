@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,36 +15,35 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.infosys.moviedb.MovieDbApplication;
-import br.com.infosys.moviedb.core.services.ActorService;
-import br.com.infosys.moviedb.domain.entities.Actor;
+import br.com.infosys.moviedb.core.services.DirectorService;
+import br.com.infosys.moviedb.domain.entities.Director;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
-public class ActorControllerTest {
+public class DirectorControllerTest {
 
-	private static final String URL_ACTOR = "http://localhost:8080/v1/actor/";
+	private static final String URL_DIRECTOR = "http://localhost:8080/v1/director";
 
 	@Autowired
-	private ActorService actorService;
+	private DirectorService directorService;
 
 	private RestTemplate restTemplate = new TestRestTemplate();
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Test
-	public void createActor() throws JsonProcessingException {
+	public void createDirector() throws JsonProcessingException {
 		// build request data
 		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("name", "João");
+		requestBody.put("name", "Vitor");
 		requestBody.put("biography", "This is a brief test biography.");
-		requestBody.put("country", "Brazil");
+		requestBody.put("country", "Japan");
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -53,23 +51,24 @@ public class ActorControllerTest {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
 
-		Map<String, Object> response = restTemplate.postForObject(URL_ACTOR, httpEntity, Map.class,
+		Map<String, Object> response = restTemplate.postForObject(URL_DIRECTOR, httpEntity, Map.class,
 				Collections.EMPTY_MAP);
 
 		// assert the response
 		Assert.assertNotNull(response);
 
 		// assert that the object is valid
-		Long actorId = Long.valueOf(response.get("idActor").toString());
+		Long directorId = Long.valueOf(response.get("idDirector").toString());
 
-		Assert.assertNotNull(actorId);
+		Assert.assertNotNull(directorId);
 
-		Actor actorFromDb = actorService.findById(actorId);
-		Assert.assertEquals("João", actorFromDb.getName());
-		Assert.assertEquals("This is a brief test biography.", actorFromDb.getBiography());
-		Assert.assertEquals("Brazil", actorFromDb.getCountry());
+		Director directorFromDb = directorService.findById(directorId);
+		Assert.assertEquals("Vitor", directorFromDb.getName());
+		Assert.assertEquals("This is a brief test biography.", directorFromDb.getBiography());
+		Assert.assertEquals("Japan", directorFromDb.getCountry());
 
 		// remove object from DB.
-		actorService.delete(actorFromDb);
+		directorService.delete(directorFromDb);
 	}
+
 }

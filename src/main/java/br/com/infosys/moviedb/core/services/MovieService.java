@@ -47,7 +47,11 @@ public class MovieService {
 
 	@Transactional(readOnly = true)
 	public boolean exists(Long id) {
-		return movieRepository.exists(id);
+		if (id != null) {
+			return movieRepository.exists(id);
+		}
+		
+		return false;
 	}
 
 }
