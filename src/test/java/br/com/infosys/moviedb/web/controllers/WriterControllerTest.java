@@ -1,8 +1,7 @@
 package br.com.infosys.moviedb.web.controllers;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,14 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.WriterService;
@@ -35,39 +28,60 @@ public class WriterControllerTest {
 	private WriterService writerService;
 
 	private RestTemplate restTemplate = new TestRestTemplate();
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Test
-	public void createWriter() throws JsonProcessingException {
+	public void createWriter() {
 		// build request data
-		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("name", "Marco");
-		requestBody.put("biography", "This is a brief test biography.");
-		requestBody.put("country", "Spain");
+		Writer writer = TestUtil.createWriter("Marco");
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		Map<String, Object> response = restTemplate.postForObject(URL_WRITER, httpEntity, Map.class,
-				Collections.EMPTY_MAP);
+		Writer response = restTemplate.postForObject(URL_WRITER, writer, Writer.class);
 
 		// assert the response
 		Assert.assertNotNull(response);
 
-		// assert that the object is valid
-		Long writerId = Long.valueOf(response.get("idWriter").toString());
-
-		Assert.assertNotNull(writerId);
-
-		Writer writerFromDb = writerService.findById(writerId);
+		Writer writerFromDb = writerService.findById(response.getIdWriter());
 		Assert.assertEquals("Marco", writerFromDb.getName());
-		Assert.assertEquals("This is a brief test biography.", writerFromDb.getBiography());
-		Assert.assertEquals("Spain", writerFromDb.getCountry());
+		Assert.assertEquals(writer.getBiography(), writerFromDb.getBiography());
+		Assert.assertEquals(writer.getCountry(), writerFromDb.getCountry());
 
 		// remove object from DB.
 		writerService.delete(writerFromDb);
+	}
+
+	@Test
+	public void deleteWriter() {
+		// build request data
+		Writer writer = TestUtil.createWriter("João");
+
+		writerService.save(writer);
+		Long idWriter = writer.getIdWriter();
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_WRITER + "/" + idWriter);
+
+		// try to fetch directly from DB
+		Writer writerFromDb = writerService.findById(idWriter);
+
+		// assert that there is no data found
+		Assert.assertNull(writerFromDb);
+	}
+
+	@Test
+	public void deleteAllWriters() {
+		// build request data
+		Writer writer = TestUtil.createWriter("João");
+		Writer writer2 = TestUtil.createWriter("Vitor");
+
+		writerService.save(Arrays.asList(writer, writer2));
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_WRITER);
+
+		// try to fetch directly from DB
+		List<Writer> writersFromDb = writerService.findAll();
+
+		// assert that there is no data found
+		Assert.assertTrue(writersFromDb.isEmpty());
+		;
 	}
 }

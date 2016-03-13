@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -38,7 +39,6 @@ public class Writer implements Serializable {
 	private String country;
 
 	@ManyToMany(mappedBy = "writers")
-	//@JoinTable(joinColumns = @JoinColumn(name = "WRITER_ID") , inverseJoinColumns = @JoinColumn(name = "MOVIE_ID") )
 	private Set<Movie> movies;
 
 	@Version

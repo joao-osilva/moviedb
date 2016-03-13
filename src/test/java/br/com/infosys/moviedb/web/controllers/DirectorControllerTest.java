@@ -1,8 +1,7 @@
 package br.com.infosys.moviedb.web.controllers;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,14 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.DirectorService;
@@ -35,40 +28,61 @@ public class DirectorControllerTest {
 	private DirectorService directorService;
 
 	private RestTemplate restTemplate = new TestRestTemplate();
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Test
-	public void createDirector() throws JsonProcessingException {
+	public void createDirector() {
 		// build request data
-		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("name", "Vitor");
-		requestBody.put("biography", "This is a brief test biography.");
-		requestBody.put("country", "Japan");
+		Director director = TestUtil.createDirector("João");
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		Map<String, Object> response = restTemplate.postForObject(URL_DIRECTOR, httpEntity, Map.class,
-				Collections.EMPTY_MAP);
+		Director response = restTemplate.postForObject(URL_DIRECTOR, director, Director.class);
 
 		// assert the response
 		Assert.assertNotNull(response);
 
-		// assert that the object is valid
-		Long directorId = Long.valueOf(response.get("idDirector").toString());
-
-		Assert.assertNotNull(directorId);
-
-		Director directorFromDb = directorService.findById(directorId);
-		Assert.assertEquals("Vitor", directorFromDb.getName());
-		Assert.assertEquals("This is a brief test biography.", directorFromDb.getBiography());
-		Assert.assertEquals("Japan", directorFromDb.getCountry());
+		Director directorFromDb = directorService.findById(response.getIdDirector());
+		Assert.assertEquals("João", directorFromDb.getName());
+		Assert.assertEquals(director.getBiography(), directorFromDb.getBiography());
+		Assert.assertEquals(director.getCountry(), directorFromDb.getCountry());
 
 		// remove object from DB.
 		directorService.delete(directorFromDb);
+	}
+
+	@Test
+	public void deleteDirector() {
+		// build request data
+		Director director = TestUtil.createDirector("João");
+
+		directorService.save(director);
+		Long idDirector = director.getIdDirector();
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_DIRECTOR + "/" + idDirector);
+
+		// try to fetch directly from DB
+		Director directorFromDb = directorService.findById(idDirector);
+
+		// assert that there is no data found
+		Assert.assertNull(directorFromDb);
+	}
+
+	@Test
+	public void deleteAllDirectors() {
+		// build request data
+		Director director = TestUtil.createDirector("João");
+		Director director2 = TestUtil.createDirector("Vitor");
+
+		directorService.save(Arrays.asList(director, director2));
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_DIRECTOR);
+
+		// try to fetch directly from DB
+		List<Director> directorsFromDb = directorService.findAll();
+
+		// assert that there is no data found
+		Assert.assertTrue(directorsFromDb.isEmpty());
+		;
 	}
 
 }

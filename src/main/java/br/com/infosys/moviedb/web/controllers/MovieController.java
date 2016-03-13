@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.infosys.moviedb.core.services.MovieService;
+import br.com.infosys.moviedb.domain.entities.Actor;
 import br.com.infosys.moviedb.domain.entities.Movie;
 
 @RestController
@@ -32,13 +34,36 @@ public class MovieController {
 		logger.info("Creating a new Movie: " + movie.getTitle());
 
 		if (movieService.exists(movie.getIdMovie())) {
-			logger.info("A Movie with id: " + movie.getIdMovie() + " already exist!");
+			logger.info("Movie with id: " + movie.getIdMovie() + " already exist!");
 			return new ResponseEntity<Movie>(HttpStatus.CONFLICT);
 		}
 
 		Movie persistedMovie = movieService.save(movie);
 
 		return new ResponseEntity<Movie>(persistedMovie, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Movie> deleteMovie(@PathVariable("id") Long id) {
+		logger.info("Deleting Movie: " + id);
+
+		if (!movieService.exists(id)) {
+			logger.info("Movie with id: " + id + " not found!");
+			return new ResponseEntity<Movie>(HttpStatus.NOT_FOUND);
+		}
+
+		movieService.deleteById(id);
+
+		return new ResponseEntity<Movie>(HttpStatus.NO_CONTENT);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE)
+	public ResponseEntity<Movie> deleteAllMovies() {
+		logger.info("Deleting all Movies");
+
+		movieService.deleteAll();
+
+		return new ResponseEntity<Movie>(HttpStatus.NO_CONTENT);
 	}
 
 }

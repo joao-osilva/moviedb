@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,16 +41,20 @@ public class Movie implements Serializable {
 	@Column(name = "TITLE", nullable = false, length = 100)
 	private String title;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "DIRECTOR_ID", referencedColumnName = "DIRECTOR_ID")
 	private Director director;
 
-	//@ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
-	@ManyToMany
-	@JoinTable(joinColumns = @JoinColumn(name = "MOVIE_ID") , inverseJoinColumns = @JoinColumn(name = "WRITER_ID") )
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "MOVIE_WRITERS",
+    		   joinColumns = @JoinColumn(name = "MOVIE_ID") , 
+    		   inverseJoinColumns = @JoinColumn(name = "WRITER_ID") )
 	private Set<Writer> writers;
 
-	@ManyToMany(mappedBy = "movies")
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "MOVIE_ACTORS",
+	           joinColumns = @JoinColumn(name = "MOVIE_ID") , 
+	           inverseJoinColumns = @JoinColumn(name = "ACTOR_ID") )
 	private Set<Actor> cast;
 
 	@Enumerated(EnumType.STRING)
@@ -102,7 +107,7 @@ public class Movie implements Serializable {
 	public Set<Writer> getWriters() {
 		return writers;
 	}
-
+	
 	public void setWriters(Set<Writer> writers) {
 		this.writers = writers;
 	}

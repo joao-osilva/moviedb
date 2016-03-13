@@ -27,10 +27,33 @@ public class WriterService {
 	public Writer save(Writer entity) {
 		return writerRepository.saveAndFlush(entity);
 	}
+	
+	@Transactional
+	public List<Writer> save(Iterable<Writer> entities) {
+		List<Writer> list = writerRepository.save(entities);
+		writerRepository.flush();
+		
+		return list;
+	}
 
+	@Transactional
+	public void deleteById(Long id) {
+		writerRepository.delete(id);
+	}
+	
 	@Transactional
 	public void delete(Writer entity) {
 		writerRepository.delete(entity);
+	}
+	
+	@Transactional
+	public void delete(Iterable<Writer> entities) {
+		writerRepository.delete(entities);
+	}
+	
+	@Transactional
+	public void deleteAll() {
+		writerRepository.deleteAllInBatch();
 	}
 
 	@Transactional(readOnly = true)

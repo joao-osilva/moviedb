@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.infosys.moviedb.core.services.DirectorService;
+import br.com.infosys.moviedb.domain.entities.Actor;
 import br.com.infosys.moviedb.domain.entities.Director;
 
 @RestController
@@ -32,13 +34,36 @@ public class DirectorController {
 		logger.info("Creating a new Director: " + director.getName());
 
 		if (directorService.exists(director.getIdDirector())) {
-			logger.info("A Director with id: " + director.getIdDirector() + " already exist!");
+			logger.info("Director with id: " + director.getIdDirector() + " already exist!");
 			return new ResponseEntity<Director>(HttpStatus.CONFLICT);
 		}
 
 		Director persistedDirector = directorService.save(director);
 
 		return new ResponseEntity<Director>(persistedDirector, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Director> deleteDirector(@PathVariable("id") Long id) {
+		logger.info("Deleting Director: " + id);
+
+		if (!directorService.exists(id)) {
+			logger.info("Director with id: " + id + " not found!");
+			return new ResponseEntity<Director>(HttpStatus.NOT_FOUND);
+		}
+
+		directorService.deleteById(id);
+
+		return new ResponseEntity<Director>(HttpStatus.NO_CONTENT);
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE)
+	public ResponseEntity<Director> deleteAllDirectors() {
+		logger.info("Deleting all Directors");
+
+		directorService.deleteAll();
+
+		return new ResponseEntity<Director>(HttpStatus.NO_CONTENT);
 	}
 
 }

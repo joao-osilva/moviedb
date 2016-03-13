@@ -1,16 +1,9 @@
 package br.com.infosys.moviedb.web.controllers;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,100 +11,148 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.infosys.moviedb.MovieDbApplication;
+import br.com.infosys.moviedb.core.services.ActorService;
+import br.com.infosys.moviedb.core.services.DirectorService;
 import br.com.infosys.moviedb.core.services.MovieService;
 import br.com.infosys.moviedb.core.services.WriterService;
 import br.com.infosys.moviedb.domain.entities.Actor;
 import br.com.infosys.moviedb.domain.entities.Director;
 import br.com.infosys.moviedb.domain.entities.Movie;
 import br.com.infosys.moviedb.domain.entities.Writer;
-import br.com.infosys.moviedb.domain.enums.GenreEnum;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
 public class MovieControllerTest {
-	
+
 	private static final String URL_MOVIE = "http://localhost:8080/v1/movie";
 
 	@Autowired
 	private MovieService movieService;
 
+	@Autowired
+	private DirectorService directorService;
+
+	@Autowired
+	private WriterService writerService;
+
+	@Autowired
+	private ActorService actorService;
+
 	private RestTemplate restTemplate = new TestRestTemplate();
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
+	
 	@Test
-	public void createMovie() throws JsonProcessingException, ParseException {
+	public void createMovie() throws ParseException {
 		// build request data
-		Director director = new Director();
-		director.setName("Andrei Takovsky");
-		director.setBiography("A brief biography of Andrei Tarkovsky.");
-		director.setCountry("Russia");
-		
-		Writer writer = new Writer();
-		writer.setName("Andrei Takovsky");
-		writer.setBiography("A brief biography of Andrei Takovsky.");
-		writer.setCountry("Russia");	
-		
-		Writer writer2 = new Writer();
-		writer2.setName("Aleksandr Misharin");
-		writer2.setBiography("A brief biography of Aleksandr Misharin.");
-		writer2.setCountry("Russia");
-		
-		Actor actor = new Actor();
-		actor.setName("Margarita Terekhova");
-		actor.setBiography("A brief biography of Margarita Terekhova.");
-		actor.setCountry("Russia");
-		
-		Actor actor2 = new Actor();
-		actor2.setName("Filipp Yankovskiy");
-		actor2.setBiography("A brief biography of Filipp Yankovskiy.");
-		actor2.setCountry("Russia");
-		
-		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("title", "Zerkalo");
-		requestBody.put("director", director);
-		requestBody.put("writers", new HashSet<>(Arrays.asList(writer, writer2)));
-		requestBody.put("cast", new HashSet<>(Arrays.asList(actor, actor2)));
-		requestBody.put("genre", GenreEnum.Drama);
-		requestBody.put("plotSummary", "A brief plot summary of Zerkalo, a film by Tarkovsky.");
-		requestBody.put("country", "Russia");
-		requestBody.put("language", "Russian");
-		requestBody.put("releaseDate", DateUtils.parseDate("1975/03/07", "yyyy/MM/dd"));		
+		Director director = TestUtil.createDirector("Andrei Takovsky");
+		directorService.save(director);
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		Writer writer = TestUtil.createWriter("Andrei Takovsky");
+		Writer writer2 = TestUtil.createWriter("Aleksandr Misharin");
+		writerService.save(Arrays.asList(writer, writer2));
 
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
+		Actor actor = TestUtil.createActor("Margarita Terekhova");
+		Actor actor2 = TestUtil.createActor("Filipp Yankovskiy");
+		actorService.save(Arrays.asList(actor, actor2));
 
-		Map<String, Object> response = restTemplate.postForObject(URL_MOVIE, httpEntity, Map.class,
-				Collections.EMPTY_MAP);
+		Movie movie = TestUtil.createMovie("Persona", 
+										   director, 
+										   Arrays.asList(writer, writer2), 
+										   Arrays.asList(actor, actor2));
+
+		Movie response = restTemplate.postForObject(URL_MOVIE, movie, Movie.class);
 
 		// assert the response
 		Assert.assertNotNull(response);
 
-		// assert that the object is valid
-		Long movieId = Long.valueOf(response.get("idMovie").toString());
+		Movie movieFromDb = movieService.findById(response.getIdMovie());
+		Assert.assertEquals("Persona", movieFromDb.getTitle());
+		Assert.assertEquals(movie.getDirector(), movieFromDb.getDirector());
+		Assert.assertEquals(movie.getWriters(), movieFromDb.getWriters());
+		Assert.assertEquals(movie.getCast(), movieFromDb.getCast());
+		Assert.assertEquals(movie.getGenre(), movieFromDb.getGenre());
+		Assert.assertEquals(movie.getPlotSummary(), movieFromDb.getPlotSummary());
+		Assert.assertEquals(movie.getCountry(), movieFromDb.getCountry());
+		Assert.assertEquals(movie.getLanguage(), movieFromDb.getLanguage());
+		Assert.assertEquals(movie.getReleaseDate(), movieFromDb.getReleaseDate());
 
-		Assert.assertNotNull(movieId);
-
-		Movie movieFromDb = movieService.findById(movieId);
-//		Assert.assertEquals("Marco", writerFromDb.getName());
-//		Assert.assertEquals("This is a brief test biography.", writerFromDb.getBiography());
-//		Assert.assertEquals("Spain", writerFromDb.getCountry());
-
-		// remove object from DB.
+		// remove object from DB.		
 		movieService.delete(movieFromDb);
+		directorService.delete(movie.getDirector());
+		writerService.delete(movie.getWriters());
+		actorService.delete(movie.getCast());		
+	}
+
+	@Test
+	public void deleteMovie() throws ParseException {
+		// build request data
+		Director director = TestUtil.createDirector("Andrei Takovsky");
+		directorService.save(director);
+
+		Writer writer = TestUtil.createWriter("Andrei Takovsky");
+		Writer writer2 = TestUtil.createWriter("Aleksandr Misharin");
+		writerService.save(Arrays.asList(writer, writer2));
+
+		Actor actor = TestUtil.createActor("Margarita Terekhova");
+		Actor actor2 = TestUtil.createActor("Filipp Yankovskiy");
+		actorService.save(Arrays.asList(actor, actor2));
+
+		Movie movie = TestUtil.createMovie("Persona", 
+				  						   director, 
+				  						   Arrays.asList(writer, writer2),
+				  						   Arrays.asList(actor, actor2));
+
+		movieService.save(movie);
+		Long idMovie = movie.getIdMovie();
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_MOVIE + "/" + idMovie);
+
+		// try to fetch directly from DB
+		Movie movieFromDb = movieService.findById(idMovie);
+
+		// assert that there is no data found
+		Assert.assertNull(movieFromDb);
+	}
+
+	@Test
+	public void deleteAllMovies() throws ParseException {
+		// build request data
+		Director director = TestUtil.createDirector("Andrei Takovsky");
+		directorService.save(director);
+
+		Writer writer = TestUtil.createWriter("Andrei Takovsky");
+		Writer writer2 = TestUtil.createWriter("Aleksandr Misharin");
+		writerService.save(Arrays.asList(writer, writer2));
+
+		Actor actor = TestUtil.createActor("Margarita Terekhova");
+		Actor actor2 = TestUtil.createActor("Filipp Yankovskiy");
+		actorService.save(Arrays.asList(actor, actor2));
+
+		Movie movie = TestUtil.createMovie("Persona", 
+				  						   director, 
+				  						   Arrays.asList(writer, writer2),
+				  						   Arrays.asList(actor, actor2));
+		
+		Movie movie2 = TestUtil.createMovie("Eyes Wide Shut", 
+				   							director, 
+				   							Arrays.asList(writer, writer2),
+				   							Arrays.asList(actor, actor2));
+
+		movieService.save(Arrays.asList(movie, movie2));
+
+		// invoke API to delete the resource
+		restTemplate.delete(URL_MOVIE);
+
+		// try to fetch directly from DB
+		List<Movie> moviesFromDb = movieService.findAll();
+
+		// assert that there is no data found
+		Assert.assertTrue(moviesFromDb.isEmpty());
 	}
 
 }

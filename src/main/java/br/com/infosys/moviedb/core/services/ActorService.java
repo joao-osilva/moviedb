@@ -27,10 +27,33 @@ public class ActorService {
 	public Actor save(Actor entity) {
 		return actorRepository.saveAndFlush(entity);
 	}
+	
+	@Transactional
+	public List<Actor> save(Iterable<Actor> entities) {
+		List<Actor> list = actorRepository.save(entities);
+		actorRepository.flush();
+		
+		return list;
+	}
+	
+	@Transactional
+	public void deleteById(Long id) {
+		actorRepository.delete(id);
+	}
 
 	@Transactional
 	public void delete(Actor entity) {
 		actorRepository.delete(entity);
+	}
+	
+	@Transactional
+	public void delete(Iterable<Actor> entities) {
+		actorRepository.delete(entities);
+	}
+	
+	@Transactional
+	public void deleteAll() {
+		actorRepository.deleteAllInBatch();
 	}
 
 	@Transactional(readOnly = true)

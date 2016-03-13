@@ -27,10 +27,33 @@ public class DirectorService {
 	public Director save(Director entity) {
 		return directorRepository.saveAndFlush(entity);
 	}
+	
+	@Transactional
+	public List<Director> save(Iterable<Director> entities) {
+		List<Director> list = directorRepository.save(entities);
+		directorRepository.flush();
+		
+		return list;
+	}
 
+	@Transactional
+	public void deleteById(Long id) {
+		directorRepository.delete(id);
+	}
+	
 	@Transactional
 	public void delete(Director entity) {
 		directorRepository.delete(entity);
+	}
+	
+	@Transactional
+	public void delete(Iterable<Director> entities) {
+		directorRepository.delete(entities);
+	}
+	
+	@Transactional
+	public void deleteAll() {
+		directorRepository.deleteAllInBatch();
 	}
 
 	@Transactional(readOnly = true)
