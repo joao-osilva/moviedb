@@ -11,7 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.infosys.moviedb.domain.entities.Actor;
 import br.com.infosys.moviedb.domain.repositories.ActorRepository;
 
+/**
+ * Service class for managing actors.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Service
+@Transactional
 public class ActorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ActorService.class);
@@ -23,35 +30,29 @@ public class ActorService {
 		this.actorRepository = actorRepository;
 	}
 
-	@Transactional
 	public Actor save(Actor entity) {
 		return actorRepository.saveAndFlush(entity);
 	}
-	
-	@Transactional
+
 	public List<Actor> save(Iterable<Actor> entities) {
 		List<Actor> list = actorRepository.save(entities);
 		actorRepository.flush();
-		
+
 		return list;
 	}
-	
-	@Transactional
+
 	public void deleteById(Long id) {
 		actorRepository.delete(id);
 	}
 
-	@Transactional
 	public void delete(Actor entity) {
 		actorRepository.delete(entity);
 	}
-	
-	@Transactional
+
 	public void delete(Iterable<Actor> entities) {
 		actorRepository.delete(entities);
 	}
-	
-	@Transactional
+
 	public void deleteAll() {
 		actorRepository.deleteAllInBatch();
 	}
@@ -73,7 +74,7 @@ public class ActorService {
 		if (id != null) {
 			return actorRepository.exists(id);
 		}
-		
+
 		return false;
 	}
 }

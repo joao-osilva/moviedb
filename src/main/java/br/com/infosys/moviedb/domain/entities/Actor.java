@@ -15,6 +15,14 @@ import javax.persistence.Version;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * Actor entity.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Entity
 @Table(name = "ACTOR")
 public class Actor implements Serializable {
@@ -36,6 +44,7 @@ public class Actor implements Serializable {
 	private String country;
 
 	@ManyToMany(mappedBy = "cast")	
+	@JsonIgnore
 	private Set<Movie> movies;
 
 	@Version

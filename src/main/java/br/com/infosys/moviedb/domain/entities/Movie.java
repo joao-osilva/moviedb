@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,6 +26,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import br.com.infosys.moviedb.domain.enums.GenreEnum;
 
+/**
+ * Movie entity.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Entity
 @Table(name = "MOVIE")
 public class Movie implements Serializable {

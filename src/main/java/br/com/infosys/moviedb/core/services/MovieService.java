@@ -11,7 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.infosys.moviedb.domain.entities.Movie;
 import br.com.infosys.moviedb.domain.repositories.MovieRepository;
 
+/**
+ * Service class for managing movies.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Service
+@Transactional
 public class MovieService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MovieService.class);
@@ -23,35 +30,29 @@ public class MovieService {
 		this.movieRepository = movieRepository;
 	}
 
-	@Transactional
 	public Movie save(Movie entity) {
 		return movieRepository.saveAndFlush(entity);
 	}
-	
-	@Transactional
+
 	public List<Movie> save(Iterable<Movie> entities) {
 		List<Movie> list = movieRepository.save(entities);
 		movieRepository.flush();
-		
+
 		return list;
 	}
-	
-	@Transactional
+
 	public void deleteById(Long id) {
 		movieRepository.delete(id);
 	}
 
-	@Transactional
 	public void delete(Movie entity) {
 		movieRepository.delete(entity);
 	}
-	
-	@Transactional
+
 	public void delete(Iterable<Movie> entities) {
 		movieRepository.delete(entities);
 	}
-	
-	@Transactional
+
 	public void deleteAll() {
 		movieRepository.deleteAllInBatch();
 	}
@@ -73,7 +74,7 @@ public class MovieService {
 		if (id != null) {
 			return movieRepository.exists(id);
 		}
-		
+
 		return false;
 	}
 

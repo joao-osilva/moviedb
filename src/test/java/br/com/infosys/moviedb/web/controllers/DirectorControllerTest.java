@@ -82,7 +82,49 @@ public class DirectorControllerTest {
 
 		// assert that there is no data found
 		Assert.assertTrue(directorsFromDb.isEmpty());
-		;
+	}
+	
+	@Test
+	public void getDirector() {
+		// build request data
+		Director director = TestUtil.createDirector("João");
+
+		directorService.save(director);
+
+		// invoke API to delete the resource
+		Director response = restTemplate.getForObject(URL_DIRECTOR + "/" + director.getIdDirector(), Director.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertEquals(director.getIdDirector(), response.getIdDirector());
+		Assert.assertEquals(director.getName(), response.getName());
+		Assert.assertEquals(director.getBiography(), response.getBiography());
+		Assert.assertEquals(director.getCountry(), response.getCountry());
+		Assert.assertEquals(director.getVersion(), response.getVersion());
+		
+		// remove object from DB.
+		directorService.delete(response);
+	}
+	
+	@Test
+	public void getAllDirectors() {
+		// build request data
+		Director director = TestUtil.createDirector("João");
+		Director director2 = TestUtil.createDirector("Vitor");
+
+		directorService.save(Arrays.asList(director, director2));
+
+		// invoke API to delete the resource
+		List<?> response = restTemplate.getForObject(URL_DIRECTOR, List.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertTrue(response.size() == 2);
+		
+		// remove object from DB.
+		directorService.deleteAll();
 	}
 
 }

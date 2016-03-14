@@ -8,16 +8,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * Writer entity.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Entity
 @Table(name = "WRITER")
 public class Writer implements Serializable {
@@ -39,6 +44,7 @@ public class Writer implements Serializable {
 	private String country;
 
 	@ManyToMany(mappedBy = "writers")
+	@JsonIgnore
 	private Set<Movie> movies;
 
 	@Version

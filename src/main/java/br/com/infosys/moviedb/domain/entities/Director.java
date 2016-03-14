@@ -15,6 +15,14 @@ import javax.persistence.Version;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * Director entity.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Entity
 @Table(name = "DIRECTOR")
 public class Director implements Serializable {
@@ -36,6 +44,7 @@ public class Director implements Serializable {
 	private String country;
 
 	@OneToMany(mappedBy = "director")
+	@JsonIgnore
 	private Set<Movie> movies;
 
 	@Version

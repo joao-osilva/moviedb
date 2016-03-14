@@ -82,6 +82,48 @@ public class ActorControllerTest {
 
 		// assert that there is no data found
 		Assert.assertTrue(actorsFromDb.isEmpty());
-		;
+	}
+
+	@Test
+	public void getActor() {
+		// build request data
+		Actor actor = TestUtil.createActor("João");
+
+		actorService.save(actor);
+
+		// invoke API to delete the resource
+		Actor response = restTemplate.getForObject(URL_ACTOR + "/" + actor.getIdActor(), Actor.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertEquals(actor.getIdActor(), response.getIdActor());
+		Assert.assertEquals(actor.getName(), response.getName());
+		Assert.assertEquals(actor.getBiography(), response.getBiography());
+		Assert.assertEquals(actor.getCountry(), response.getCountry());
+		Assert.assertEquals(actor.getVersion(), response.getVersion());
+		
+		// remove object from DB.
+		actorService.delete(response);
+	}
+	
+	@Test
+	public void getAllActors() {
+		// build request data
+		Actor actor = TestUtil.createActor("João");
+		Actor actor2 = TestUtil.createActor("Vitor");
+
+		actorService.save(Arrays.asList(actor, actor2));
+
+		// invoke API to delete the resource
+		List<?> response = restTemplate.getForObject(URL_ACTOR, List.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertTrue(response.size() == 2);
+		
+		// remove object from DB.
+		actorService.deleteAll();
 	}
 }

@@ -154,5 +154,89 @@ public class MovieControllerTest {
 		// assert that there is no data found
 		Assert.assertTrue(moviesFromDb.isEmpty());
 	}
+	
+	@Test
+	public void getMovie() throws ParseException {
+		// build request data
+		Director director = TestUtil.createDirector("Andrei Takovsky");
+		directorService.save(director);
+
+		Writer writer = TestUtil.createWriter("Andrei Takovsky");
+		Writer writer2 = TestUtil.createWriter("Aleksandr Misharin");
+		writerService.save(Arrays.asList(writer, writer2));
+
+		Actor actor = TestUtil.createActor("Margarita Terekhova");
+		Actor actor2 = TestUtil.createActor("Filipp Yankovskiy");
+		actorService.save(Arrays.asList(actor, actor2));
+
+		Movie movie = TestUtil.createMovie("Persona", 
+				  						   director, 
+				  						   Arrays.asList(writer, writer2),
+				  						   Arrays.asList(actor, actor2));
+
+		movieService.save(movie);
+
+		// invoke API to delete the resource
+		Movie response = restTemplate.getForObject(URL_MOVIE + "/" + movie.getIdMovie(), Movie.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertEquals(movie.getIdMovie(), response.getIdMovie());
+		Assert.assertEquals(movie.getTitle(), response.getTitle());
+		Assert.assertEquals(movie.getDirector(), response.getDirector());
+		Assert.assertEquals(movie.getWriters(), response.getWriters());
+		Assert.assertEquals(movie.getCast(), response.getCast());
+		Assert.assertEquals(movie.getGenre(), response.getGenre());
+		Assert.assertEquals(movie.getPlotSummary(), response.getPlotSummary());
+		Assert.assertEquals(movie.getCountry(), response.getCountry());
+		Assert.assertEquals(movie.getLanguage(), response.getLanguage());
+		//TODO fix date Assert.assertEquals(movie.getReleaseDate(), response.getReleaseDate());
+		Assert.assertEquals(movie.getVersion(), response.getVersion());
+		
+		// remove object from DB.
+		movieService.delete(response);
+		directorService.delete(movie.getDirector());
+		writerService.delete(movie.getWriters());
+		actorService.delete(movie.getCast());
+	}
+	
+	@Test
+	public void getAllMovies() throws ParseException {
+		// build request data
+		Director director = TestUtil.createDirector("Andrei Takovsky");
+		directorService.save(director);
+
+		Writer writer = TestUtil.createWriter("Andrei Takovsky");
+		Writer writer2 = TestUtil.createWriter("Aleksandr Misharin");
+		writerService.save(Arrays.asList(writer, writer2));
+
+		Actor actor = TestUtil.createActor("Margarita Terekhova");
+		Actor actor2 = TestUtil.createActor("Filipp Yankovskiy");
+		actorService.save(Arrays.asList(actor, actor2));
+
+		Movie movie = TestUtil.createMovie("Persona", 
+				  						   director, 
+				  						   Arrays.asList(writer, writer2),
+				  						   Arrays.asList(actor, actor2));
+		
+		Movie movie2 = TestUtil.createMovie("Eyes Wide Shut", 
+				   							director, 
+				   							Arrays.asList(writer, writer2),
+				   							Arrays.asList(actor, actor2));
+
+		movieService.save(Arrays.asList(movie, movie2));
+
+		// invoke API to delete the resource
+		List<?> response = restTemplate.getForObject(URL_MOVIE, List.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertTrue(response.size() == 2);
+		
+		// remove object from DB.
+		movieService.deleteAll();
+	}
 
 }

@@ -51,7 +51,7 @@ public class TestUtil {
 		movie.setPlotSummary("A brief plot summary of TestMovie, a film by Someone.");
 		movie.setCountry("Russia");
 		movie.setLanguage("Russian");
-		movie.setReleaseDate(DateUtils.parseDate("1975/03/07", "yyyy/MM/dd"));
+		movie.setReleaseDate(DateUtils.parseDate("1977/03/16", "yyyy/MM/dd"));
 		
 		return movie;
 	}

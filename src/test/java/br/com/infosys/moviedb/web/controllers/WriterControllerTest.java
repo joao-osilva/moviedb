@@ -82,6 +82,48 @@ public class WriterControllerTest {
 
 		// assert that there is no data found
 		Assert.assertTrue(writersFromDb.isEmpty());
-		;
+	}
+	
+	@Test
+	public void getWriter() {
+		// build request data
+		Writer writer = TestUtil.createWriter("João");
+		
+		writerService.save(writer);
+		
+		// invoke API to delete the resource
+		Writer response = restTemplate.getForObject(URL_WRITER + "/" + writer.getIdWriter(), Writer.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertEquals(writer.getIdWriter(), response.getIdWriter());
+		Assert.assertEquals(writer.getName(), response.getName());
+		Assert.assertEquals(writer.getBiography(), response.getBiography());
+		Assert.assertEquals(writer.getCountry(), response.getCountry());
+		Assert.assertEquals(writer.getVersion(), response.getVersion());
+		
+		// remove object from DB.
+		writerService.delete(response);
+	}
+	
+	@Test
+	public void getAllWriters() {
+		// build request data
+		Writer writer = TestUtil.createWriter("João");
+		Writer writer2 = TestUtil.createWriter("Vitor");
+
+		writerService.save(Arrays.asList(writer, writer2));
+
+		// invoke API to delete the resource
+		List<?> response = restTemplate.getForObject(URL_WRITER, List.class);
+
+		// assert the response
+		Assert.assertNotNull(response);
+
+		Assert.assertTrue(response.size() == 2);
+		
+		// remove object from DB.
+		writerService.deleteAll();
 	}
 }

@@ -11,7 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.infosys.moviedb.domain.entities.Writer;
 import br.com.infosys.moviedb.domain.repositories.WriterRepository;
 
+/**
+ * Service class for managing writers.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @Service
+@Transactional
 public class WriterService {
 
 	private static final Logger logger = LoggerFactory.getLogger(WriterService.class);
@@ -22,36 +29,30 @@ public class WriterService {
 	public WriterService(WriterRepository writerRepository) {
 		this.writerRepository = writerRepository;
 	}
-	
-	@Transactional
+
 	public Writer save(Writer entity) {
 		return writerRepository.saveAndFlush(entity);
 	}
-	
-	@Transactional
+
 	public List<Writer> save(Iterable<Writer> entities) {
 		List<Writer> list = writerRepository.save(entities);
 		writerRepository.flush();
-		
+
 		return list;
 	}
 
-	@Transactional
 	public void deleteById(Long id) {
 		writerRepository.delete(id);
 	}
-	
-	@Transactional
+
 	public void delete(Writer entity) {
 		writerRepository.delete(entity);
 	}
-	
-	@Transactional
+
 	public void delete(Iterable<Writer> entities) {
 		writerRepository.delete(entities);
 	}
-	
-	@Transactional
+
 	public void deleteAll() {
 		writerRepository.deleteAllInBatch();
 	}
@@ -73,7 +74,7 @@ public class WriterService {
 		if (id != null) {
 			return writerRepository.exists(id);
 		}
-		
+
 		return false;
 	}
 }
