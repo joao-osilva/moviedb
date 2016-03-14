@@ -1,17 +1,24 @@
 package br.com.infosys.moviedb.web.controllers;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
+
+import com.jayway.restassured.http.ContentType;
 
 import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.DirectorService;
@@ -27,43 +34,46 @@ public class DirectorControllerTest {
 	@Autowired
 	private DirectorService directorService;
 
-	private RestTemplate restTemplate = new TestRestTemplate();
-
 	@Test
 	public void createDirector() {
 		// build request data
 		Director director = TestUtil.createDirector("João");
 
-		Director response = restTemplate.postForObject(URL_DIRECTOR, director, Director.class);
-
-		// assert the response
-		Assert.assertNotNull(response);
-
-		Director directorFromDb = directorService.findById(response.getIdDirector());
-		Assert.assertEquals("João", directorFromDb.getName());
-		Assert.assertEquals(director.getBiography(), directorFromDb.getBiography());
-		Assert.assertEquals(director.getCountry(), directorFromDb.getCountry());
+		// invoke API to post the resource and assert the response
+		given().
+				contentType(ContentType.JSON).
+				body(director).
+		when().
+				post(URL_DIRECTOR).
+		then().
+				statusCode(HttpStatus.SC_CREATED).
+				body("name", equalTo(director.getName())).
+				body("biography", equalTo(director.getBiography())).
+				body("country", equalTo(director.getCountry()));
 
 		// remove object from DB.
-		directorService.delete(directorFromDb);
+		directorService.deleteAll();
 	}
 
 	@Test
 	public void deleteDirector() {
 		// build request data
 		Director director = TestUtil.createDirector("João");
-
 		directorService.save(director);
+		
 		Long idDirector = director.getIdDirector();
 
-		// invoke API to delete the resource
-		restTemplate.delete(URL_DIRECTOR + "/" + idDirector);
+		// invoke API to delete the resource and assert the response
+		when().
+				delete(URL_DIRECTOR + "/" + idDirector).
+		then(). 
+				statusCode(HttpStatus.SC_NO_CONTENT);
 
 		// try to fetch directly from DB
 		Director directorFromDb = directorService.findById(idDirector);
 
 		// assert that there is no data found
-		Assert.assertNull(directorFromDb);
+		assertNull(directorFromDb);
 	}
 
 	@Test
@@ -71,58 +81,58 @@ public class DirectorControllerTest {
 		// build request data
 		Director director = TestUtil.createDirector("João");
 		Director director2 = TestUtil.createDirector("Vitor");
-
 		directorService.save(Arrays.asList(director, director2));
 
-		// invoke API to delete the resource
-		restTemplate.delete(URL_DIRECTOR);
+		// invoke API to delete the resource and assert the response
+		when().
+				delete(URL_DIRECTOR).
+		then(). 
+				statusCode(HttpStatus.SC_NO_CONTENT);
 
 		// try to fetch directly from DB
 		List<Director> directorsFromDb = directorService.findAll();
 
 		// assert that there is no data found
-		Assert.assertTrue(directorsFromDb.isEmpty());
+		assertTrue(directorsFromDb.isEmpty());
 	}
-	
+
 	@Test
 	public void getDirector() {
 		// build request data
 		Director director = TestUtil.createDirector("João");
-
 		directorService.save(director);
-
-		// invoke API to delete the resource
-		Director response = restTemplate.getForObject(URL_DIRECTOR + "/" + director.getIdDirector(), Director.class);
-
-		// assert the response
-		Assert.assertNotNull(response);
-
-		Assert.assertEquals(director.getIdDirector(), response.getIdDirector());
-		Assert.assertEquals(director.getName(), response.getName());
-		Assert.assertEquals(director.getBiography(), response.getBiography());
-		Assert.assertEquals(director.getCountry(), response.getCountry());
-		Assert.assertEquals(director.getVersion(), response.getVersion());
 		
+		Long idDirector = director.getIdDirector();
+		
+		// invoke API to delete the resource and assert the response
+		when().
+				get(URL_DIRECTOR + "/" + idDirector).
+		then().
+				statusCode(HttpStatus.SC_OK).
+				body("idDirector", equalTo(director.getIdDirector().intValue())).
+				body("name", equalTo(director.getName())).
+				body("biography", equalTo(director.getBiography())).
+				body("country", equalTo(director.getCountry())).
+				body("version", equalTo(director.getVersion()));
+
 		// remove object from DB.
-		directorService.delete(response);
+		directorService.delete(director);
 	}
-	
+
 	@Test
 	public void getAllDirectors() {
 		// build request data
 		Director director = TestUtil.createDirector("João");
 		Director director2 = TestUtil.createDirector("Vitor");
-
 		directorService.save(Arrays.asList(director, director2));
 
-		// invoke API to delete the resource
-		List<?> response = restTemplate.getForObject(URL_DIRECTOR, List.class);
+		// invoke API to delete the resource and assert the response
+		when().
+				get(URL_DIRECTOR).
+		then().
+				statusCode(HttpStatus.SC_OK).
+				body("size()", is(2));
 
-		// assert the response
-		Assert.assertNotNull(response);
-
-		Assert.assertTrue(response.size() == 2);
-		
 		// remove object from DB.
 		directorService.deleteAll();
 	}

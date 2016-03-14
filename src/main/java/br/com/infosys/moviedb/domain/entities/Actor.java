@@ -29,10 +29,11 @@ public class Actor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ACTOR_ID", nullable = false, unique = true)
-	private Long actorId;
+	private Long idActor;
 
 	@Column(name = "NAME", nullable = false, length = 100)
 	private String name;
@@ -54,11 +55,11 @@ public class Actor implements Serializable {
 	}
 
 	public Long getIdActor() {
-		return actorId;
+		return idActor;
 	}
 
 	public void setIdActor(Long idActor) {
-		this.actorId = idActor;
+		this.idActor = idActor; 
 	}
 
 	public String getName() {
@@ -101,7 +102,7 @@ public class Actor implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((actorId == null) ? 0 : actorId.hashCode());
+		result = prime * result + ((idActor == null) ? 0 : idActor.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -116,10 +117,10 @@ public class Actor implements Serializable {
 			return false;
 
 		final Actor other = (Actor) obj;
-		if (actorId == null) {
-			if (other.actorId != null)
+		if (idActor == null) {
+			if (other.idActor != null)
 				return false;
-		} else if (!actorId.equals(other.actorId))
+		} else if (!idActor.equals(other.idActor))
 			return false;
 		if (name == null) {
 			if (other.name != null)

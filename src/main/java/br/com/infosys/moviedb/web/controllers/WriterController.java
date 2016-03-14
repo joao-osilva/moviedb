@@ -30,7 +30,7 @@ public class WriterController {
 		this.writerService = writerService;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Writer> createWriter(@RequestBody Writer writer) {
 		logger.info("Creating Writer with name " + writer.getName());
 

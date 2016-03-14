@@ -41,7 +41,7 @@ public class Movie implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "MOVIE_ID", nullable = false, unique = true)
-	private Long movieId;
+	private Long idMovie;
 
 	@Column(name = "TITLE", nullable = false, length = 100)
 	private String title;
@@ -86,11 +86,11 @@ public class Movie implements Serializable {
 	}
 
 	public Long getIdMovie() {
-		return movieId;
+		return idMovie;
 	}
 
 	public void setIdMovie(Long idMovie) {
-		this.movieId = idMovie;
+		this.idMovie = idMovie;
 	}
 
 	public String getTitle() {
@@ -173,7 +173,7 @@ public class Movie implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((movieId == null) ? 0 : movieId.hashCode());
+		result = prime * result + ((idMovie == null) ? 0 : idMovie.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		return result;
 	}
@@ -188,10 +188,10 @@ public class Movie implements Serializable {
 			return false;
 
 		final Movie other = (Movie) obj;
-		if (movieId == null) {
-			if (other.movieId != null)
+		if (idMovie == null) {
+			if (other.idMovie != null)
 				return false;
-		} else if (!movieId.equals(other.movieId))
+		} else if (!idMovie.equals(other.idMovie))
 			return false;
 		if (title == null) {
 			if (other.title != null)

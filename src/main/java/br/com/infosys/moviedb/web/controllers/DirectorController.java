@@ -30,7 +30,7 @@ public class DirectorController {
 		this.directorService = directorService;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Director> createDirector(@RequestBody Director director) {
 		logger.info("Creating Director with name " + director.getName());
 

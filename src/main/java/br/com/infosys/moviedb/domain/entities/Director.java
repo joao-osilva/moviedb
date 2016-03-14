@@ -32,7 +32,7 @@ public class Director implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "DIRECTOR_ID", nullable = false, unique = true)
-	private Long directorId;
+	private Long idDirector;
 
 	@Column(name = "NAME", nullable = false, length = 100)
 	private String name;
@@ -54,11 +54,11 @@ public class Director implements Serializable {
 	}
 
 	public Long getIdDirector() {
-		return directorId;
+		return idDirector;
 	}
 
 	public void setIdDirector(Long idDirector) {
-		this.directorId = idDirector;
+		this.idDirector = idDirector;
 	}
 
 	public String getName() {
@@ -101,7 +101,7 @@ public class Director implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((directorId == null) ? 0 : directorId.hashCode());
+		result = prime * result + ((idDirector == null) ? 0 : idDirector.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -116,10 +116,10 @@ public class Director implements Serializable {
 			return false;
 		
 		final Director other = (Director) obj;
-		if (directorId == null) {
-			if (other.directorId != null)
+		if (idDirector == null) {
+			if (other.idDirector != null)
 				return false;
-		} else if (!directorId.equals(other.directorId))
+		} else if (!idDirector.equals(other.idDirector))
 			return false;
 		if (name == null) {
 			if (other.name != null)

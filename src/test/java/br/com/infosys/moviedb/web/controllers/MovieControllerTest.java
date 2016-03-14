@@ -1,10 +1,15 @@
 package br.com.infosys.moviedb.web.controllers;
 
+import static com.jayway.restassured.RestAssured.when;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
+import org.apache.commons.httpclient.HttpStatus;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,28 +68,29 @@ public class MovieControllerTest {
 										   director, 
 										   Arrays.asList(writer, writer2), 
 										   Arrays.asList(actor, actor2));
-
+		
+		// invoke API to post the resource and assert the response
 		Movie response = restTemplate.postForObject(URL_MOVIE, movie, Movie.class);
 
 		// assert the response
-		Assert.assertNotNull(response);
+		assertNotNull(response);
 
 		Movie movieFromDb = movieService.findById(response.getIdMovie());
-		Assert.assertEquals("Persona", movieFromDb.getTitle());
-		Assert.assertEquals(movie.getDirector(), movieFromDb.getDirector());
-		Assert.assertEquals(movie.getWriters(), movieFromDb.getWriters());
-		Assert.assertEquals(movie.getCast(), movieFromDb.getCast());
-		Assert.assertEquals(movie.getGenre(), movieFromDb.getGenre());
-		Assert.assertEquals(movie.getPlotSummary(), movieFromDb.getPlotSummary());
-		Assert.assertEquals(movie.getCountry(), movieFromDb.getCountry());
-		Assert.assertEquals(movie.getLanguage(), movieFromDb.getLanguage());
-		Assert.assertEquals(movie.getReleaseDate(), movieFromDb.getReleaseDate());
+		assertEquals(movie.getTitle(), movieFromDb.getTitle());
+		assertEquals(movie.getDirector(), movieFromDb.getDirector());
+		assertEquals(movie.getWriters(), movieFromDb.getWriters());
+		assertEquals(movie.getCast(), movieFromDb.getCast());
+		assertEquals(movie.getGenre(), movieFromDb.getGenre());
+		assertEquals(movie.getPlotSummary(), movieFromDb.getPlotSummary());
+		assertEquals(movie.getCountry(), movieFromDb.getCountry());
+		assertEquals(movie.getLanguage(), movieFromDb.getLanguage());
+		assertEquals(movie.getReleaseDate(), movieFromDb.getReleaseDate());
 
 		// remove object from DB.		
-		movieService.delete(movieFromDb);
-		directorService.delete(movie.getDirector());
-		writerService.delete(movie.getWriters());
-		actorService.delete(movie.getCast());		
+		movieService.deleteAll();
+		directorService.deleteAll();
+		writerService.deleteAll();
+		actorService.deleteAll();
 	}
 
 	@Test
@@ -107,16 +113,20 @@ public class MovieControllerTest {
 				  						   Arrays.asList(actor, actor2));
 
 		movieService.save(movie);
+		
 		Long idMovie = movie.getIdMovie();
 
-		// invoke API to delete the resource
-		restTemplate.delete(URL_MOVIE + "/" + idMovie);
+		// invoke API to delete the resource and assert the response
+		when().
+				delete(URL_MOVIE + "/" + idMovie).
+		then(). 
+				statusCode(HttpStatus.SC_NO_CONTENT);
 
 		// try to fetch directly from DB
 		Movie movieFromDb = movieService.findById(idMovie);
 
 		// assert that there is no data found
-		Assert.assertNull(movieFromDb);
+		assertNull(movieFromDb);
 	}
 
 	@Test
@@ -145,14 +155,17 @@ public class MovieControllerTest {
 
 		movieService.save(Arrays.asList(movie, movie2));
 
-		// invoke API to delete the resource
-		restTemplate.delete(URL_MOVIE);
+		// invoke API to delete the resource and assert the response
+		when().
+				delete(URL_MOVIE).
+		then(). 
+				statusCode(HttpStatus.SC_NO_CONTENT);
 
 		// try to fetch directly from DB
 		List<Movie> moviesFromDb = movieService.findAll();
 
 		// assert that there is no data found
-		Assert.assertTrue(moviesFromDb.isEmpty());
+		assertTrue(moviesFromDb.isEmpty());
 	}
 	
 	@Test
@@ -180,19 +193,19 @@ public class MovieControllerTest {
 		Movie response = restTemplate.getForObject(URL_MOVIE + "/" + movie.getIdMovie(), Movie.class);
 
 		// assert the response
-		Assert.assertNotNull(response);
+		assertNotNull(response);
 
-		Assert.assertEquals(movie.getIdMovie(), response.getIdMovie());
-		Assert.assertEquals(movie.getTitle(), response.getTitle());
-		Assert.assertEquals(movie.getDirector(), response.getDirector());
-		Assert.assertEquals(movie.getWriters(), response.getWriters());
-		Assert.assertEquals(movie.getCast(), response.getCast());
-		Assert.assertEquals(movie.getGenre(), response.getGenre());
-		Assert.assertEquals(movie.getPlotSummary(), response.getPlotSummary());
-		Assert.assertEquals(movie.getCountry(), response.getCountry());
-		Assert.assertEquals(movie.getLanguage(), response.getLanguage());
+		assertEquals(movie.getIdMovie(), response.getIdMovie());
+		assertEquals(movie.getTitle(), response.getTitle());
+		assertEquals(movie.getDirector(), response.getDirector());
+		assertEquals(movie.getWriters(), response.getWriters());
+		assertEquals(movie.getCast(), response.getCast());
+		assertEquals(movie.getGenre(), response.getGenre());
+		assertEquals(movie.getPlotSummary(), response.getPlotSummary());
+		assertEquals(movie.getCountry(), response.getCountry());
+		assertEquals(movie.getLanguage(), response.getLanguage());
 		//TODO fix date Assert.assertEquals(movie.getReleaseDate(), response.getReleaseDate());
-		Assert.assertEquals(movie.getVersion(), response.getVersion());
+		assertEquals(movie.getVersion(), response.getVersion());
 		
 		// remove object from DB.
 		movieService.delete(response);
@@ -227,13 +240,12 @@ public class MovieControllerTest {
 
 		movieService.save(Arrays.asList(movie, movie2));
 
-		// invoke API to delete the resource
-		List<?> response = restTemplate.getForObject(URL_MOVIE, List.class);
-
-		// assert the response
-		Assert.assertNotNull(response);
-
-		Assert.assertTrue(response.size() == 2);
+		// invoke API to delete the resource and assert the response
+		when().
+				get(URL_MOVIE).
+		then().
+				statusCode(HttpStatus.SC_OK).
+				body("size()", is(2));
 		
 		// remove object from DB.
 		movieService.deleteAll();
