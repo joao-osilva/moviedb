@@ -40,6 +40,18 @@ public class WriterService {
 
 		return list;
 	}
+	
+	public Writer update(Long id, Writer toBe) {
+		Writer asIs = writerRepository.findOne(id);
+		
+		asIs.setName(toBe.getName());
+		asIs.setBiography(toBe.getBiography());
+		asIs.setCountry(toBe.getCountry());
+		
+		writerRepository.flush();
+		
+		return asIs;
+	}
 
 	public void deleteById(Long id) {
 		writerRepository.delete(id);

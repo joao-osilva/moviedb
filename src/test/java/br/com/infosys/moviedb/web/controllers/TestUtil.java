@@ -12,36 +12,76 @@ import br.com.infosys.moviedb.domain.entities.Movie;
 import br.com.infosys.moviedb.domain.entities.Writer;
 import br.com.infosys.moviedb.domain.enums.GenreEnum;
 
+/**
+ * Utility class for creating test objects. 
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 public class TestUtil {
 
+	/**
+	 * Creates an actor object.
+	 * 
+	 * @param name
+	 * 
+	 * @return actor
+	 */
 	public static Actor createActor(String name) {
 		Actor actor = new Actor();
 		actor.setName(name);
 		actor.setBiography("This is a brief test biography.");
 		actor.setCountry("United States");
-		
+
 		return actor;
 	}
 
+	/**
+	 * Creates a director object.
+	 * 
+	 * @param name
+	 * 
+	 * @return director.
+	 */
 	public static Director createDirector(String name) {
 		Director director = new Director();
 		director.setName(name);
 		director.setBiography("This is a brief test biography.");
 		director.setCountry("Denmark");
-		
+
 		return director;
 	}
 
+	/**
+	 * Creates a writer object.
+	 * 
+	 * @param name
+	 * 
+	 * @return writer.
+	 */
 	public static Writer createWriter(String name) {
 		Writer writer = new Writer();
 		writer.setName(name);
 		writer.setBiography("This is a brief test biography.");
 		writer.setCountry("Germany");
-		
+
 		return writer;
 	}
 
-	public static Movie createMovie(String title, Director director, List<Writer> writers, List<Actor> cast) throws ParseException {
+	/**
+	 * Creates a movie object.
+	 * 
+	 * @param title
+	 * @param director
+	 * @param writers
+	 * @param cast
+	 * 
+	 * @return movie.
+	 * 
+	 * @throws ParseException in case something goes wrong with the date conversion.
+	 */
+	public static Movie createMovie(String title, Director director, List<Writer> writers, List<Actor> cast)
+			throws ParseException {
 		Movie movie = new Movie();
 		movie.setTitle(title);
 		movie.setDirector(director);
@@ -52,8 +92,7 @@ public class TestUtil {
 		movie.setCountry("Russia");
 		movie.setLanguage("Russian");
 		movie.setReleaseDate(DateUtils.parseDate("1977/03/16", "yyyy/MM/dd"));
-		
+
 		return movie;
 	}
-
 }

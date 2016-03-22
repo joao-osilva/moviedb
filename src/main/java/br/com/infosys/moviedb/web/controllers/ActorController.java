@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.infosys.moviedb.core.services.ActorService;
 import br.com.infosys.moviedb.domain.entities.Actor;
 
+/**
+ * Actor resource API.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RestController
 @RequestMapping("${api.url.actor}")
 public class ActorController {

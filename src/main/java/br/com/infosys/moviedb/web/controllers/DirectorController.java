@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.infosys.moviedb.core.services.DirectorService;
 import br.com.infosys.moviedb.domain.entities.Director;
 
+/**
+ * Director resource API.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RestController
 @RequestMapping("${api.url.director}")
 public class DirectorController {
@@ -42,6 +48,20 @@ public class DirectorController {
 		Director persistedDirector = directorService.save(director);
 
 		return new ResponseEntity<Director>(persistedDirector, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(path = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Director> updateDirector(@PathVariable("id") Long id, @RequestBody Director director) {
+		logger.info("Updating Director " + id);
+		
+		if (!directorService.exists(id)) {
+			logger.info("Director with id " + id + " not found!");
+			return new ResponseEntity<Director>(HttpStatus.NOT_FOUND);
+		}
+		
+		Director updatedDirector = directorService.update(id, director);
+		
+		return new ResponseEntity<Director>(updatedDirector, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

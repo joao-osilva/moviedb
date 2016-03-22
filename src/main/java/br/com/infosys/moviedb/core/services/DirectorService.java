@@ -41,6 +41,18 @@ public class DirectorService {
 		return list;
 	}
 
+	public Director update(Long id, Director toBe) {
+		Director asIs = directorRepository.findOne(id);
+		
+		asIs.setName(toBe.getName());
+		asIs.setBiography(toBe.getBiography());
+		asIs.setCountry(toBe.getCountry());
+		
+		directorRepository.flush();
+		
+		return asIs;		
+	}
+
 	public void deleteById(Long id) {
 		directorRepository.delete(id);
 	}

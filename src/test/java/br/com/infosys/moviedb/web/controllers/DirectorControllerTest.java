@@ -24,6 +24,12 @@ import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.DirectorService;
 import br.com.infosys.moviedb.domain.entities.Director;
 
+/**
+ * Test case for the Director REST controller.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
@@ -34,6 +40,9 @@ public class DirectorControllerTest {
 	@Autowired
 	private DirectorService directorService;
 
+	/**
+	 * Create a director.
+	 */
 	@Test
 	public void createDirector() {
 		// build request data
@@ -54,7 +63,43 @@ public class DirectorControllerTest {
 		// remove object from DB.
 		directorService.deleteAll();
 	}
+	
+	/**
+	 * Update a director.
+	 */
+	@Test
+	public void updateDirector() {
+		// build request data
+		Director director = TestUtil.createDirector("João");
+		directorService.save(director);
+		
+		Long idDirector = director.getIdDirector();
+		
+		Director changedDirector = new Director();
+		changedDirector.setIdDirector(idDirector);
+		changedDirector.setName("Changed name");
+		changedDirector.setBiography("Changed biography");
+		changedDirector.setCountry("Changed country");
 
+		// invoke API to post the resource and assert the response
+		given().
+				contentType(ContentType.JSON).
+				body(changedDirector).
+		when().
+				put(URL_DIRECTOR + "/" + idDirector).
+		then().
+				statusCode(HttpStatus.SC_OK).
+				body("name", equalTo(changedDirector.getName())).
+				body("biography", equalTo(changedDirector.getBiography())).
+				body("country", equalTo(changedDirector.getCountry()));				
+		
+		// remove object from DB
+		directorService.deleteAll();
+	}
+
+	/**
+	 * Remove a director.
+	 */
 	@Test
 	public void deleteDirector() {
 		// build request data
@@ -76,6 +121,9 @@ public class DirectorControllerTest {
 		assertNull(directorFromDb);
 	}
 
+	/**
+	 * Remove all directors.
+	 */
 	@Test
 	public void deleteAllDirectors() {
 		// build request data
@@ -96,6 +144,9 @@ public class DirectorControllerTest {
 		assertTrue(directorsFromDb.isEmpty());
 	}
 
+	/**
+	 * Retrieve a director.
+	 */
 	@Test
 	public void getDirector() {
 		// build request data
@@ -119,6 +170,9 @@ public class DirectorControllerTest {
 		directorService.delete(director);
 	}
 
+	/**
+	 * Retrieve all directors.
+	 */
 	@Test
 	public void getAllDirectors() {
 		// build request data

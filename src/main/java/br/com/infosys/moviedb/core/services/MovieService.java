@@ -40,6 +40,24 @@ public class MovieService {
 
 		return list;
 	}
+	
+	public Movie update(Long id, Movie toBe) {
+		Movie asIs = movieRepository.findOne(id);
+		
+		asIs.setTitle(toBe.getTitle());
+		asIs.setDirector(toBe.getDirector());
+		asIs.setWriters(toBe.getWriters());
+		asIs.setCast(toBe.getCast());
+		asIs.setGenre(toBe.getGenre());
+		asIs.setPlotSummary(toBe.getPlotSummary());
+		asIs.setCountry(toBe.getCountry());
+		asIs.setLanguage(toBe.getLanguage());
+		asIs.setReleaseDate(toBe.getReleaseDate());		
+		
+		movieRepository.flush();
+		
+		return asIs;
+	}
 
 	public void deleteById(Long id) {
 		movieRepository.delete(id);

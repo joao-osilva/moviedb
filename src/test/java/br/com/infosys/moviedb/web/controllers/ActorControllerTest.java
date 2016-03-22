@@ -24,6 +24,12 @@ import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.ActorService;
 import br.com.infosys.moviedb.domain.entities.Actor;
 
+/**
+ * Test case for the Actor REST controller.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
@@ -34,6 +40,9 @@ public class ActorControllerTest {
 	@Autowired
 	private ActorService actorService;
 
+	/**
+	 * Create an actor.
+	 */
 	@Test
 	public void createActor() {
 		// build request data
@@ -55,6 +64,9 @@ public class ActorControllerTest {
 		actorService.deleteAll();
 	}
 	
+	/**
+	 * Update an actor.
+	 */
 	@Test
 	public void updateActor() {
 		// build request data
@@ -85,6 +97,9 @@ public class ActorControllerTest {
 		actorService.deleteAll();
 	}
 
+	/**
+	 * Remove an actor.
+	 */
 	@Test
 	public void deleteActor() {
 		// build request data
@@ -106,6 +121,9 @@ public class ActorControllerTest {
 		assertNull(actorFromDb);
 	}
 
+	/**
+	 * Remove all actors.
+	 */
 	@Test
 	public void deleteAllActors() {
 		// build request data
@@ -126,6 +144,9 @@ public class ActorControllerTest {
 		assertTrue(actorsFromDb.isEmpty());
 	}
 
+	/**
+	 * Retrieve an actor.
+	 */
 	@Test
 	public void getActor() {
 		// build request data
@@ -149,6 +170,9 @@ public class ActorControllerTest {
 		actorService.delete(actor);
 	}
 	
+	/**
+	 * Retrieve all actors.
+	 */
 	@Test
 	public void getAllActors() {
 		// build request data

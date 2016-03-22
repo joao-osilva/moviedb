@@ -24,6 +24,12 @@ import br.com.infosys.moviedb.MovieDbApplication;
 import br.com.infosys.moviedb.core.services.WriterService;
 import br.com.infosys.moviedb.domain.entities.Writer;
 
+/**
+ * Test case for the Writer REST controller.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MovieDbApplication.class)
 @WebIntegrationTest
@@ -34,6 +40,9 @@ public class WriterControllerTest {
 	@Autowired
 	private WriterService writerService;
 
+	/**
+	 * Create a writer.
+	 */
 	@Test
 	public void createWriter() {
 		// build request data
@@ -54,7 +63,43 @@ public class WriterControllerTest {
 		// remove object from DB.
 		writerService.deleteAll();;
 	}
+	
+	/**
+	 * Update a writer.
+	 */
+	@Test
+	public void updateWriter() {
+		// build request data
+		Writer writer = TestUtil.createWriter("João");
+		writerService.save(writer);
+		
+		Long idWriter = writer.getIdWriter();
+		
+		Writer changedWriter = new Writer();
+		changedWriter.setIdWriter(idWriter);
+		changedWriter.setName("Changed name");
+		changedWriter.setBiography("Changed biography");
+		changedWriter.setCountry("Changed country");
 
+		// invoke API to post the resource and assert the response
+		given().
+				contentType(ContentType.JSON).
+				body(changedWriter).
+		when().
+				put(URL_WRITER + "/" + idWriter).
+		then().
+				statusCode(HttpStatus.SC_OK).
+				body("name", equalTo(changedWriter.getName())).
+				body("biography", equalTo(changedWriter.getBiography())).
+				body("country", equalTo(changedWriter.getCountry()));				
+		
+		// remove object from DB
+		writerService.deleteAll();
+	}
+
+	/**
+	 * Remove a writer.
+	 */
 	@Test
 	public void deleteWriter() {
 		// build request data
@@ -76,6 +121,9 @@ public class WriterControllerTest {
 		assertNull(writerFromDb);
 	}
 
+	/**
+	 * Remove all writers.
+	 */
 	@Test
 	public void deleteAllWriters() {
 		// build request data
@@ -96,6 +144,9 @@ public class WriterControllerTest {
 		assertTrue(writersFromDb.isEmpty());
 	}
 	
+	/**
+	 * Retrieve a writer.
+	 */
 	@Test
 	public void getWriter() {
 		// build request data
@@ -119,6 +170,9 @@ public class WriterControllerTest {
 		writerService.delete(writer);
 	}
 	
+	/**
+	 * Retrieve all writers.
+	 */
 	@Test
 	public void getAllWriters() {
 		// build request data
