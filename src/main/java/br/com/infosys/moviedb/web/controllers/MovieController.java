@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.infosys.moviedb.core.services.MovieService;
 import br.com.infosys.moviedb.domain.entities.Movie;
 
+/**
+ * Movie resource API.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RestController
 @RequestMapping("${api.url.movie}")
 public class MovieController {
@@ -30,7 +36,7 @@ public class MovieController {
 		this.movieService = movieService;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
 		logger.info("Creating a new Movie: " + movie.getTitle());
 
@@ -42,6 +48,20 @@ public class MovieController {
 		Movie persistedMovie = movieService.save(movie);
 
 		return new ResponseEntity<Movie>(persistedMovie, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(path = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Movie> updateMovie(@PathVariable("id") Long id, @RequestBody Movie movie) {
+		logger.info("Updating Movie " + id);
+		
+		if (!movieService.exists(id)) {
+			logger.info("Movie with id " + id + " not found!");
+			return new ResponseEntity<Movie>(HttpStatus.NOT_FOUND);
+		}
+		
+		Movie updatedMovie = movieService.update(id, movie);
+		
+		return new ResponseEntity<Movie>(updatedMovie, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

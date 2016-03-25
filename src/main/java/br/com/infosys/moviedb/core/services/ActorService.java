@@ -41,6 +41,18 @@ public class ActorService {
 		return list;
 	}
 
+	public Actor update(Long id, Actor toBe) {
+		Actor asIs = actorRepository.findOne(id);
+		
+		asIs.setName(toBe.getName());
+		asIs.setBiography(toBe.getBiography());
+		asIs.setCountry(toBe.getCountry());
+		
+		actorRepository.flush();
+		
+		return asIs;
+	}
+
 	public void deleteById(Long id) {
 		actorRepository.delete(id);
 	}

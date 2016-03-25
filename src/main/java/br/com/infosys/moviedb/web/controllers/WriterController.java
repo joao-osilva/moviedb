@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.infosys.moviedb.core.services.WriterService;
 import br.com.infosys.moviedb.domain.entities.Writer;
 
+/**
+ * Writer resource API.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RestController
 @RequestMapping("${api.url.writer}")
 public class WriterController {
@@ -30,7 +36,7 @@ public class WriterController {
 		this.writerService = writerService;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Writer> createWriter(@RequestBody Writer writer) {
 		logger.info("Creating Writer with name " + writer.getName());
 
@@ -42,6 +48,20 @@ public class WriterController {
 		Writer persistedWriter = writerService.save(writer);
 
 		return new ResponseEntity<Writer>(persistedWriter, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(path = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Writer> updateWriter(@PathVariable("id") Long id, @RequestBody Writer writer) {
+		logger.info("Updating Writer " + id);
+		
+		if (!writerService.exists(id)) {
+			logger.info("Writer with id " + id + " not found!");
+			return new ResponseEntity<Writer>(HttpStatus.NOT_FOUND);
+		}
+		
+		Writer updatedWriter = writerService.update(id, writer);
+		
+		return new ResponseEntity<Writer>(updatedWriter, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

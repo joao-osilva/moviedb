@@ -32,7 +32,7 @@ public class Writer implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "WRITER_ID", nullable = false, unique = true)
-	private Long writerId;
+	private Long idWriter;
 
 	@Column(name = "NAME", nullable = false, length = 100)
 	private String name;
@@ -54,11 +54,11 @@ public class Writer implements Serializable {
 	}
 
 	public Long getIdWriter() {
-		return writerId;
+		return idWriter;
 	}
 
 	public void setIdWriter(Long idWriter) {
-		this.writerId = idWriter;
+		this.idWriter = idWriter;
 	}
 
 	public String getName() {
@@ -102,7 +102,7 @@ public class Writer implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((writerId == null) ? 0 : writerId.hashCode());
+		result = prime * result + ((idWriter == null) ? 0 : idWriter.hashCode());
 		return result;
 	}
 
@@ -121,10 +121,10 @@ public class Writer implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (writerId == null) {
-			if (other.writerId != null)
+		if (idWriter == null) {
+			if (other.idWriter != null)
 				return false;
-		} else if (!writerId.equals(other.writerId))
+		} else if (!idWriter.equals(other.idWriter))
 			return false;
 		return true;
 	}

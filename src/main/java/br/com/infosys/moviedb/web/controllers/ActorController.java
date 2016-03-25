@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.infosys.moviedb.core.services.ActorService;
 import br.com.infosys.moviedb.domain.entities.Actor;
 
+/**
+ * Actor resource API.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 @RestController
 @RequestMapping("${api.url.actor}")
 public class ActorController {
@@ -30,10 +36,10 @@ public class ActorController {
 		this.actorService = actorService;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Actor> createActor(@RequestBody Actor actor) {
-
 		logger.info("Creating Actor with name " + actor.getName());
+		
 		if (actorService.exists(actor.getIdActor())) {
 			logger.info("Actor with id " + actor.getIdActor() + " already exist!");
 			return new ResponseEntity<Actor>(HttpStatus.CONFLICT);
@@ -42,6 +48,20 @@ public class ActorController {
 		Actor persistedActor = actorService.save(actor);
 
 		return new ResponseEntity<Actor>(persistedActor, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Actor> updateActor(@PathVariable("id") Long id, @RequestBody Actor actor) {
+		logger.info("Updating Actor " + id);
+		
+		if (!actorService.exists(id)) {
+			logger.info("Actor with id " + id + " not found!");
+			return new ResponseEntity<Actor>(HttpStatus.NOT_FOUND);
+		}
+		
+		Actor updatedActor = actorService.update(id, actor);
+		
+		return new ResponseEntity<Actor>(updatedActor, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

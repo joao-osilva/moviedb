@@ -1,5 +1,11 @@
 package br.com.infosys.moviedb.domain.enums;
 
+/**
+ * Enum for movie genres.
+ * 
+ * @author vitor191291@gmail.com
+ *
+ */
 public enum GenreEnum {
 	
 	Biography, 
